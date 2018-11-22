@@ -7,7 +7,7 @@ class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
 
-        self.conv1 = nn.Conv2d(3, 64, 5, stride = 2, padding = 2)
+        self.conv1 = nn.Conv2d(1, 64, 5, stride = 2, padding = 2)
         self.conv1_bn = nn.BatchNorm2d(64)
         self.conv2 = nn.Conv2d(64, 64, 3, stride = 1, padding = 1)
         self.conf2_bn = nn.BatchNorm2d(64)
@@ -95,6 +95,3 @@ class Net(nn.Module):
         x = F.avg_pool2d(x)
 
         return x
-
-net = Net()
-print(net)
