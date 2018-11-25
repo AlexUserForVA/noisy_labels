@@ -1,7 +1,6 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
-
 class Net(nn.Module):
 
     def __init__(self):
@@ -10,49 +9,49 @@ class Net(nn.Module):
         self.conv1 = nn.Conv2d(1, 64, 5, stride = 2, padding = 2)
         self.conv1_bn = nn.BatchNorm2d(64)
         self.conv2 = nn.Conv2d(64, 64, 3, stride = 1, padding = 1)
-        self.conf2_bn = nn.BatchNorm2d(64)
+        self.conv2_bn = nn.BatchNorm2d(64)
         self.do1 = nn.Dropout2d(0.3)
 
         self.conv3 = nn.Conv2d(64, 128, 3, stride = 1, padding = 1)
         self.conv3_bn = nn.BatchNorm2d(128)
         self.conv4 = nn.Conv2d(128, 128, 3, stride = 1, padding = 1)
-        self.conf4_bn = nn.BatchNorm2d(128)
+        self.conv4_bn = nn.BatchNorm2d(128)
         self.do2 = nn.Dropout2d(0.3)
 
         self.conv5 = nn.Conv2d(128, 256, 3, stride=1, padding=1)
         self.conv5_bn = nn.BatchNorm2d(256)
         self.do3 = nn.Dropout2d(0.3)
         self.conv6 = nn.Conv2d(256, 256, 3, stride=1, padding=1)
-        self.conf6_bn = nn.BatchNorm2d(256)
+        self.conv6_bn = nn.BatchNorm2d(256)
         self.do4 = nn.Dropout2d(0.3)
         self.conv7 = nn.Conv2d(256, 384, 3, stride=1, padding=1)
-        self.conf7_bn = nn.BatchNorm2d(384)
+        self.conv7_bn = nn.BatchNorm2d(384)
         self.do5 = nn.Dropout2d(0.3)
         self.conv8 = nn.Conv2d(384, 384, 3, stride=1, padding=1)
-        self.conf8_bn = nn.BatchNorm2d(384)
+        self.conv8_bn = nn.BatchNorm2d(384)
         self.do6 = nn.Dropout2d(0.3)
 
         self.conv9 = nn.Conv2d(384, 512, 3, stride=1, padding=1)
-        self.conf9_bn = nn.BatchNorm2d(512)
+        self.conv9_bn = nn.BatchNorm2d(512)
         self.conv10 = nn.Conv2d(512, 512, 3, stride=1, padding=1)
-        self.conf10_bn = nn.BatchNorm2d(512)
+        self.conv10_bn = nn.BatchNorm2d(512)
         self.do7 = nn.Dropout2d(0.3)
 
         self.conv11 = nn.Conv2d(512, 512, 3, stride=1, padding=1)
-        self.conf11_bn = nn.BatchNorm2d(512)
+        self.conv11_bn = nn.BatchNorm2d(512)
         self.conv12 = nn.Conv2d(512, 512, 3, stride=1, padding=1)
-        self.conf12_bn = nn.BatchNorm2d(512)
+        self.conv12_bn = nn.BatchNorm2d(512)
         self.do8 = nn.Dropout2d(0.3)
 
         self.conv13 = nn.Conv2d(512, 512, 3, stride=1, padding=0)
-        self.conf13_bn = nn.BatchNorm2d(512)
+        self.conv13_bn = nn.BatchNorm2d(512)
         self.do9 = nn.Dropout2d(0.5)
         self.conv14 = nn.Conv2d(512, 512, 1, stride=1, padding=0)
-        self.conf14_bn = nn.BatchNorm2d(512)
+        self.conv14_bn = nn.BatchNorm2d(512)
         self.do10 = nn.Dropout2d(0.5)
 
         self.conv15 = nn.Conv2d(512, 41, 1, stride=1, padding=0)
-        self.conf15_bn = nn.BatchNorm2d(41)
+        self.conv15_bn = nn.BatchNorm2d(41)
 
 
     def forward(self, x):
@@ -92,6 +91,10 @@ class Net(nn.Module):
         x = self.do10(x)
 
         x = self.conv15_bn(self.conv15(x))
-        x = F.avg_pool2d(x)
-
+        size_to_pool = x.size()
+        x = F.avg_pool2d(x, (size_to_pool[2],size_to_pool[3]))
+        x = x.view(-1, 41)
         return x
+
+net = Net()
+print(net)

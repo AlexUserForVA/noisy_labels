@@ -78,9 +78,6 @@ def load_data(fold=1, n_workers=N_WORKERS, spec_dir="specs_train_v1", train_veri
     files, labels, verified = get_files_and_labels(os.path.join(DATA_ROOT, train_file), spec_dir)
     _, _, verified_for_val = get_files_and_labels(os.path.join(DATA_ROOT, "train.csv"), spec_dir)
 
-    # TODO subset of data due to 'lack of memory' issue
-    files, labels, verified, verified_for_val = files[0:2200], labels[0:2200], verified[0:2200], verified_for_val[0:2200]
-
     # stratified split
     np.random.seed(4711)
     r_idx = np.random.permutation(len(files))
@@ -131,8 +128,8 @@ def load_data(fold=1, n_workers=N_WORKERS, spec_dir="specs_train_v1", train_veri
     pool = AugmentedAudioFileClassificationDataPool
     specProcessor = LoadPrecomputedSpectrogramProcessor()
 
-    train_pool = pool(tr_files, tr_labels, specProcessor, n_workers=n_workers, shuffle=True, use_cache=False)
-    valid_pool = pool(va_files, va_labels, specProcessor, n_workers=n_workers, shuffle=False, use_cache=False)
+    train_pool = pool(tr_files, tr_labels, specProcessor, n_workers=n_workers, shuffle=True, use_cache=False, max_len = max_len, test_mode = False)
+    valid_pool = pool(va_files, va_labels, specProcessor, n_workers=n_workers, shuffle=False, use_cache=False, max_len = max_len, test_mode = False)
 
     load_test = False
     if load_test:
@@ -165,11 +162,11 @@ def load_data(fold=1, n_workers=N_WORKERS, spec_dir="specs_train_v1", train_veri
 
         return pool
 
-    if fix_lengths:
-        train_pool = fix_pool(train_pool, test_mode=False)
-        valid_pool = fix_pool(valid_pool, test_mode=False)
-        if load_test:
-            test_pool = fix_pool(test_pool, test_mode=True)
+    # if fix_lengths:
+    #    train_pool = fix_pool(train_pool, test_mode=False)
+    #    valid_pool = fix_pool(valid_pool, test_mode=False)
+    #    if load_test:
+    #        test_pool = fix_pool(test_pool, test_mode=True)
 
     # normalize data
     if normalize:

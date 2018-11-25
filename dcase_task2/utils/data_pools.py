@@ -14,7 +14,7 @@ class AugmentedAudioFileClassificationDataPool(object):
     """
 
     def __init__(self, files, targets, audio_processor, n_workers=1, shuffle=True, use_cache=False, n_classes=None,
-                 target_type=np.int32, use_masks=False, mask_len=None):
+                 target_type=np.int32, use_masks=False, mask_len=None, min_len = 128, max_len = 512, test_mode = False):
         """
         Constructor
         """
@@ -24,6 +24,9 @@ class AugmentedAudioFileClassificationDataPool(object):
         self.shape = [len(self.files)]
         self.use_masks = use_masks
         self.mask_len = mask_len
+        self.min_len = min_len
+        self.max_len = max_len
+        self.test_mode = test_mode
 
         self.audio_processor = audio_processor
 
@@ -42,7 +45,7 @@ class AugmentedAudioFileClassificationDataPool(object):
 
         # check if files are audios or precomputed spectrograms
         #if self.files[-1].endswith(".npy"):
-        #    for file in self.files:qqqqqq
+        #    for file in self.files:
         #        self.cache[file] = np.load(file)
         #        i = i + 1
 
@@ -93,21 +96,15 @@ class AugmentedAudioFileClassificationDataPool(object):
         for file_id in indices:
 
             key = self.files[file_id]
+            spec = ret_val[compute_file_list.index(key)].astype(np.float32)
+            # fixing spectrogram lengths ...
+            tmp = spec.copy()
+            while spec.shape[-1] < self.max_len:
+                if self.test_mode and spec.shape[-1] >= self.min_len:
+                    break
+                spec = np.concatenate((spec, tmp), axis=-1)
 
-            # TODO
-            # check if spectrogram is in cache
-            if key in self.cache:
-                spec = self.cache[key]
-
-            # spectrogram was computed
-            else:
-                spec = ret_val[compute_file_list.index(key)].astype(np.float32)
-
-                # add spectrogram to cache
-                if self.use_cache:
-                    self.cache[key] = spec
-
-            X.append(spec)
+            X.append(spec[:, :, 0:self.max_len])
 
         # compute masks and pad spectrogram lengths
         if self.use_masks:

@@ -3,4 +3,4 @@
 #EXP_ROOT = "/home/matthias/experiments/dcase_task2/"
 
 DATA_ROOT = "/home/alex/datasets"
-EXP_ROOT = "/home/matthias/experiments/dcase_task2/"
+EXP_ROOT = "/home/alex/experiments/dcase_task2/"
